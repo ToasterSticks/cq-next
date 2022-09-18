@@ -13,7 +13,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		return {
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: {
-				content: `https://github.com/hemisemidemipresent/cyberquincy - CyberQuincy's GitHub repo. This clone is maintained by Toast#6601, running on http interactions.`,
+				content: `Original bot: <https://github.com/hemisemidemipresent/cyberquincy>\nThis clone is maintained by Toast#6601, running on http interactions.`,
 				flags: MessageFlags.Ephemeral,
 			},
 		};
