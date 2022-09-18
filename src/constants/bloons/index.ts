@@ -7140,7 +7140,7 @@ const BloonLength = {
 
 const Temple = {
 	PRIMARY: [
-		'**gold-blade**:\ngold-blade-1: 15d, 10p, 2.0s, 8j\ngold-blade-2: 25d, 20p, 1.5s, 8j\n**gold-glaive**\ngold-glaive-1: 10d, 50p, 1.3s\ngold-glaive-2: 20d, 50p, 0.8s\ngold-glaive-3: 30d, 50p, 0.5s',
+		'__gold-blade__:\ngold-blade-1: 15d, 10p, 2.0s, 8j\ngold-blade-2: 25d, 20p, 1.5s, 8j\n__gold-glaive__:\ngold-glaive-1: 10d, 50p, 1.3s\ngold-glaive-2: 20d, 50p, 0.8s\ngold-glaive-3: 30d, 50p, 0.5s',
 		'sunblast buffed: +5p (25)',
 		'sunblast buffed: +1d (6), +5p (25)\ngains gold-blade-1 attack',
 		'sunblast buffed: +1d (6), +5p (25), 90%s (0.054)\ngains gold-blade-1 attack',
@@ -7153,7 +7153,7 @@ const Temple = {
 	],
 
 	MILITARY: [
-		'**moab-missile**\nmoab-missile-1: 1d, 74md (75), 50p, ∞r, 3.0s\nmoab-missile-2: 1d, 74md (75), 50p, ∞r, 1.5s\nmoab-missile-3: 1d, 74md (75), 50p, ∞r, 1.0s\nSubtowers:\n**gold-spectre**\ndart attack (10d, 10p, 0.3s)\nbomb attack (6d, 30p, 0.3s)\ngold-spectre-1 flies clockwise\ngold-spectre-2 flies anticlockwise\ninherits buffs provided by other towers, except alchemist',
+		'__moab-missile__:\nmoab-missile-1: 1d, 74md (75), 50p, ∞r, 3.0s\nmoab-missile-2: 1d, 74md (75), 50p, ∞r, 1.5s\nmoab-missile-3: 1d, 74md (75), 50p, ∞r, 1.0s\nSubtowers:\n__gold-spectre__:\ndart attack (10d, 10p, 0.3s)\nbomb attack (6d, 30p, 0.3s)\ngold-spectre-1 flies clockwise\ngold-spectre-2 flies anticlockwise\ninherits buffs provided by other towers, except alchemist',
 		'nothing noticeable',
 		'sunblast buffed: +5p (25)',
 		'sunblast buffed: +5p (25)\ngains moab-missile-1 attack',
@@ -7166,7 +7166,7 @@ const Temple = {
 	],
 
 	MAGIC: [
-		'**arcane-blast**\narcane-blast-1: 20d, 7p, 4.0s, 4j\narcane-blast-2: 30d, 7p, 2.0s, 4j\narcane-blast-3: 35d, 7p, 2.0s, 6j\n**push**\npush-1: 0d, 500p, 5.0s, knock back bloons\npush-2: 0d, 500p, 5.0s, knock back bloons and moabs\n**mini-avatar:**\n30s\nhas beam attack (4d, 6p, 0.03s, 50r, 3j)\n65s lifetime',
+		'__arcane-blast__:\narcane-blast-1: 20d, 7p, 4.0s, 4j\narcane-blast-2: 30d, 7p, 2.0s, 4j\narcane-blast-3: 35d, 7p, 2.0s, 6j\n__push__:\npush-1: 0d, 500p, 5.0s, knock back bloons\npush-2: 0d, 500p, 5.0s, knock back bloons and moabs\n__mini-avatar__:\n30s\nhas beam attack (4d, 6p, 0.03s, 50r, 3j)\n65s lifetime',
 		'nothing noticeable',
 		'gains arcane-blast-1 attack',
 		'sunblast buffed: 10% chance to knock back bloons\ngains arcane-blast-1 attack',
@@ -7192,6 +7192,17 @@ const Temple = {
 	],
 } as const;
 
+const TSG = {
+	PRIMARY:
+		'__gold-blade__: blades are equally spaced starting from 22.5° (instead of 0°)\n__gold-glaive__: arcs clockwise (instead of anticlockwise)',
+	MILITARY:
+		'__moab-missile__: slightly faster projectile speed\n__gold-spectre-1__: figure-infinite flight path\n__gold-spectre-2__: figure-eight flight path\nprojectile speed and size buffs do stack, but are capped at +100%',
+	MAGIC:
+		'__arcane-blast__: slightly wider spread\n__push__: none, a TSG can only have one push attack (if magic is sacrificed both times, the highest level is used)',
+	SUPPORT:
+		'__buff__: none, but the buff from TSG sacrifices is considered distinct to the buff from temple sacrifices, and so can stack together (even if it is a separate temple)',
+} as const;
+
 export {
 	Bosses,
 	Colors,
@@ -7210,4 +7221,5 @@ export {
 	RoundLength,
 	BloonLength,
 	Temple,
+	TSG,
 };
