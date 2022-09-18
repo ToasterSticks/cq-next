@@ -1,6 +1,6 @@
 account_id  = "88e970e7c66a206dc1d32ad757af81c5"
 main        = "dist/worker.js"
-name        = "http-interaction-bot"
+name        = "sober-quinze"
 workers_dev = true
 
 [build]
