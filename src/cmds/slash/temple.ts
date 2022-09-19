@@ -6,6 +6,7 @@ import {
 	type APIApplicationCommandInteractionDataSubcommandOption,
 	type APIEmbed,
 	type APIApplicationCommandInteractionDataOption,
+	type APIEmbedField,
 } from 'discord-api-types/v10';
 import { stripIndents } from 'common-tags';
 import { Colors, Temple, TSG } from '../../constants/bloons';
@@ -118,7 +119,7 @@ const handleMax = (options: APIApplicationCommandInteractionDataOption[]): APIEm
       For example if you had a \`1101\` temple that you've max-sacrificed on all 4 categories, you would get \`1101\` + \`1111\` = \`2212\``
 		);
 
-	const embed: APIEmbed = {
+	const embed: APIEmbed & { fields: APIEmbedField[] } = {
 		title: `Max temple stats for ${configuration}`,
 		color: Colors.YELLOW,
 		fields: [],
@@ -138,11 +139,13 @@ const handleMax = (options: APIApplicationCommandInteractionDataOption[]): APIEm
 		let value = Temple[category][0] + '\n' + levelToString(tier > 0 ? 9 : 0, category);
 		if (tier === 2) value += `\n**TSG**:\n${TSG[category]}`;
 
-		embed.fields!.push({
+		embed.fields.push({
 			name: `${titles[index]} (tier ${tier})`,
 			value,
 		});
 	});
+
+	embed.fields[3].value = embed.fields[3].value.trim();
 
 	return embed;
 };
