@@ -9,7 +9,7 @@ import {
 	type APIEmbedField,
 } from 'discord-api-types/v10';
 import { stripIndents } from 'common-tags';
-import { Colors, Temple, TSG } from '../../constants/bloons';
+import { Colors, Temple, TSG, TowerType } from '../../constants/bloons';
 import type { Command } from '../../http-interactions';
 import { getOption } from '../../util';
 
@@ -78,31 +78,40 @@ const handleFromSacrifice = (options: APIApplicationCommandInteractionDataOption
 	const magic = getOption<number>(options, 'magic', true) ?? 0;
 	const support = getOption<number>(options, 'support', true) ?? 0;
 
-	const embed: APIEmbed = {
-		title: 'Temple Stats',
+	const embed: APIEmbed & { fields: APIEmbedField[] } = {
 		color: Colors.YELLOW,
+		title: 'Temple Stats',
 		fields: [
 			{
 				name: `Primary sacrifice ($${primary})`,
-				value: Temple.PRIMARY[0] + '\n' + levelToString(cashToLevel(primary), 'PRIMARY'),
+				value:
+					Temple[TowerType.PRIMARY][0] +
+					'\n' +
+					levelToString(cashToLevel(primary), TowerType.PRIMARY),
 			},
 			{
 				name: `Military sacrifice ($${military})`,
-				value: Temple.MILITARY[0] + '\n' + levelToString(cashToLevel(military), 'MILITARY'),
+				value:
+					Temple[TowerType.MILITARY][0] +
+					'\n' +
+					levelToString(cashToLevel(military), TowerType.MILITARY),
 			},
 			{
 				name: `Magic sacrifice ($${magic})`,
-				value: Temple.MAGIC[0] + '\n' + levelToString(cashToLevel(magic), 'MAGIC'),
+				value:
+					Temple[TowerType.MAGIC][0] + '\n' + levelToString(cashToLevel(magic), TowerType.MAGIC),
 			},
 			{
 				name: `Support sacrifice ($${support})`,
 				value:
-					Temple.SUPPORT[0] +
+					Temple[TowerType.SUPPORT][0] +
 					'\n' +
-					levelToString(cashToLevel(support), 'SUPPORT').replace('\u200b', ''),
+					levelToString(cashToLevel(support), TowerType.SUPPORT),
 			},
 		],
 	};
+
+	for (const field of embed.fields) field.value = field.value.replace('\u200b', '');
 
 	return embed;
 };
@@ -123,8 +132,8 @@ const handleMax = (options: APIApplicationCommandInteractionDataOption[]): APIEm
 		);
 
 	const embed: APIEmbed & { fields: APIEmbedField[] } = {
-		title: `Max temple stats for ${configuration}`,
 		color: Colors.YELLOW,
+		title: `Max temple stats for ${configuration}`,
 		fields: [],
 	};
 
@@ -133,17 +142,17 @@ const handleMax = (options: APIApplicationCommandInteractionDataOption[]): APIEm
 		'Military sacrifice',
 		'Magic sacrifice',
 		'Support sacrifice',
-	];
+	] as const;
 
-	(['PRIMARY', 'MILITARY', 'MAGIC', 'SUPPORT'] as const).forEach((category, index) => {
+	titles.forEach((title, index) => {
 		const tier = +configuration[index];
 		if (!tier) return;
 
-		let value = Temple[category][0] + '\n' + levelToString(tier > 0 ? 9 : 0, category);
-		if (tier === 2) value += `\n**TSG**:\n${TSG[category]}`;
+		let value = Temple[index][0] + '\n' + levelToString(tier > 0 ? 9 : 0, index);
+		if (tier === 2) value += `\n**TSG**:\n${TSG[index]}`;
 
 		embed.fields.push({
-			name: `${titles[index]} (tier ${tier})`,
+			name: `${title} (tier ${tier})`,
 			value,
 		});
 	});
@@ -157,7 +166,7 @@ const cashToLevel = (cash: number) => {
 	return idx !== 1 ? idx : 9;
 };
 
-const levelToString = (level: number, towerType: keyof typeof Temple) => {
+const levelToString = (level: number, towerType: TowerType) => {
 	if (!level) return '\u200b';
 	return Temple[towerType][level];
 };

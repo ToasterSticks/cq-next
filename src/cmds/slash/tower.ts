@@ -105,9 +105,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			: totalCost;
 
 		const embed: APIEmbed = {
+			color: Colors.CYBER,
 			title,
 			description: pathDescription,
-			color: Colors.CYBER,
 			fields: [
 				{
 					name: 'Cost ($)',

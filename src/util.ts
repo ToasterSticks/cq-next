@@ -44,12 +44,12 @@ export const getOption = <
 		| boolean
 		| APIApplicationCommandInteractionDataBasicOption[]
 		| APIApplicationCommandInteractionDataSubcommandOption[],
-	R extends boolean = false
+	round extends boolean = false
 >(
 	options: APIApplicationCommandInteractionDataOption[] | undefined,
 	name: string,
 	hoist = false
-): R extends true ? T : T | null => {
+): round extends true ? T : T | null => {
 	let hoisted = options;
 
 	if (hoist && hoisted) {
@@ -62,9 +62,8 @@ export const getOption = <
 
 	const option = hoisted?.find((option) => option.name === name);
 
-	return ((option && ('value' in option ? option.value : option.options)) ?? null) as R extends true
-		? T
-		: T | null;
+	return ((option && ('value' in option ? option.value : option.options)) ??
+		null) as round extends true ? T : T | null;
 };
 
 export const getModalValue = (data: APIModalSubmission, name: string) => {
@@ -162,6 +161,37 @@ export class Towers {
 		Math.round((price * PRICE_MULTIPLIER[difficulty]) / 5) * 5;
 }
 
+export class Enemies {
+	static getHealthRamping = (round: number) => {
+		let v;
+
+		if (round <= 80) v = 1;
+		else if (round <= 100) v = (round - 30) / 50;
+		else if (round <= 124) v = (round - 72) / 20;
+		else if (round <= 150) v = (3 * round - 320) / 20;
+		else if (round <= 250) v = (7 * round - 920) / 20;
+		else if (round <= 300) v = round - 208.5;
+		else if (round <= 400) v = (3 * round - 717) / 2;
+		else if (round <= 500) v = (5 * round - 1517) / 2;
+		else v = 5 * round - 2008.5;
+
+		return roundDec(v, 2);
+	};
+
+	static getSpeedRamping = (round: number) => {
+		let v;
+
+		if (round <= 80) v = 1;
+		else if (round <= 100) v = 1 + (round - 80) * 0.02;
+		else if (round <= 150) v = 1.6 + (round - 101) * 0.02;
+		else if (round <= 200) v = 3.0 + (round - 151) * 0.02;
+		else if (round <= 250) v = 4.5 + (round - 201) * 0.02;
+		else v = 6.0 + (round - 252) * 0.02;
+
+		return roundDec(v, 2);
+	};
+}
+
 const PRICE_MULTIPLIER = {
 	EASY: 0.85,
 	MEDIUM: 1,
@@ -207,4 +237,9 @@ export const addHideOptions = (
 			choices: [{ name: 'Yes', value: 1 }],
 			type: ApplicationCommandOptionType.Integer,
 		});
+};
+
+export const roundDec = (num: number, precision: number) => {
+	const factor = 10 ** precision;
+	return Math.round((num + Number.EPSILON) * factor) / factor;
 };
