@@ -198,7 +198,7 @@ const Colors = {
 	GREEN: 0x00ff00,
 	TURQ: 0x00ff69,
 	DARKGREEN: 0x00aa00,
-	CYBER: 0x00e6bb,
+	CYBER: 0xff5c5c,
 	BLUE: 0x0069ff,
 	BLURPLE: 0x7289da,
 	DARK_BLUE: 0x0000ff,

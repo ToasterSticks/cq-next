@@ -9,13 +9,7 @@ import { stripIndents } from 'common-tags';
 import { BLOONOLOGY_TOWER_STATS, Colors, COSTS } from '../../constants/bloons';
 import type { Command } from '../../http-interactions';
 import type { ValidTowerPath } from '../../types';
-import {
-	addNumberSeparator,
-	getOption,
-	REPORT_BUG_BUTTON_ROW,
-	toTitleCase,
-	Towers,
-} from '../../util';
+import { getOption, REPORT_BUG_BUTTON_ROW, toTitleCase, Towers } from '../../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'tower',
@@ -112,18 +106,18 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 				{
 					name: 'Cost ($)',
 					value: stripIndents`
-						Easy: ${addNumberSeparator(Towers.difficultyPriceMult(upgradeCost, 'EASY'))}
-						Normal: ${addNumberSeparator(upgradeCost)}
-						Hard: ${addNumberSeparator(Towers.difficultyPriceMult(upgradeCost, 'HARD'))}
-						Impoppable: ${addNumberSeparator(Towers.difficultyPriceMult(upgradeCost, 'IMPOPPABLE'))}`,
+						Easy: ${Towers.difficultyPriceMult(upgradeCost, 'EASY').toLocaleString()}
+						Normal: ${upgradeCost.toLocaleString()}
+						Hard: ${Towers.difficultyPriceMult(upgradeCost, 'HARD').toLocaleString()}
+						Impoppable: ${Towers.difficultyPriceMult(upgradeCost, 'IMPOPPABLE').toLocaleString()}`,
 					inline: true,
 				},
 				{
 					name: 'Total cost ($)',
-					value: stripIndents`Easy: ${addNumberSeparator(easyTotalCost)}
-						Medium: ${addNumberSeparator(totalCost)}
-						Hard: ${addNumberSeparator(hardTotalCost)}
-						Impoppable: ${addNumberSeparator(impopTotalCost)}`,
+					value: stripIndents`Easy: ${easyTotalCost.toLocaleString()}
+						Medium: ${totalCost.toLocaleString()}
+						Hard: ${hardTotalCost.toLocaleString()}
+						Impoppable: ${impopTotalCost.toLocaleString()}`,
 					inline: true,
 				},
 			],

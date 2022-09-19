@@ -3,6 +3,7 @@ import {
 	InteractionResponseType,
 	type ApplicationCommandType,
 	type APIEmbed,
+	type APIEmbedField,
 } from 'discord-api-types/v10';
 import {
 	ABR_INCOME,
@@ -16,7 +17,7 @@ import {
 } from '../../constants/bloons';
 import { stripIndents } from 'common-tags';
 import type { Command } from '../../http-interactions';
-import { addNumberSeparator, Enemies, getOption, roundDec } from '../../util';
+import { Enemies, getOption, roundDec } from '../../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'round',
@@ -83,12 +84,12 @@ const generateFreeplayEmbed = (round: number, mode: Gamemode) => {
 			},
 			{
 				name: 'XP earned',
-				value: `${addNumberSeparator(xp * 0.1)}`,
+				value: `${(xp * 0.1).toLocaleString()}`,
 				inline: true,
 			},
 			{
 				name: 'Total XP from R1',
-				value: `${addNumberSeparator(totalXp * 0.1)}`,
+				value: `${(totalXp * 0.1).toLocaleString()}`,
 				inline: true,
 			},
 			{
@@ -111,24 +112,24 @@ const generateRegularEmbed = (round: number, mode: Gamemode) => {
 	const roundRBE = isABR ? ABR_INCOME[round].rbe : NORMAL_INCOME[round].rbe;
 	const roundCash = isABR
 		? round > 2
-			? addNumberSeparator(ABR_INCOME[round].cashThisRound)
+			? ABR_INCOME[round].cashThisRound
 			: 'ABR cash data not available for round 1-2'
-		: addNumberSeparator(NORMAL_INCOME[round].cashThisRound);
+		: NORMAL_INCOME[round].cashThisRound;
 
-	const embed: APIEmbed = {
+	const embed: APIEmbed & { fields: APIEmbedField[] } = {
 		color: Colors.CYBER,
 		title: `Round ${round} ${isABR ? 'ABR' : ''}`,
 		description: roundContent,
 		fields: [
 			{ name: 'Round length (seconds)', value: roundLength.toString(), inline: true },
-			{ name: 'RBE', value: addNumberSeparator(roundRBE), inline: true },
+			{ name: 'RBE', value: roundRBE.toLocaleString(), inline: true },
 			{
 				name: 'Cash earned',
-				value: '$' + roundCash,
+				value: '$' + roundCash.toLocaleString(),
 				inline: true,
 			},
-			{ name: 'XP earned', value: addNumberSeparator(xp), inline: true },
-			{ name: 'Total XP from R1', value: addNumberSeparator(totalXp) },
+			{ name: 'XP earned', value: xp.toLocaleString(), inline: true },
+			{ name: 'Total XP from R1', value: totalXp.toLocaleString() },
 			{
 				name: 'Notes',
 				value: stripIndents`
@@ -137,6 +138,18 @@ const generateRegularEmbed = (round: number, mode: Gamemode) => {
 			},
 		],
 	};
+
+	if (round > 80) {
+		const healthRampFactor = Enemies.getHealthRamping(round);
+		const speedRampFactor = Enemies.getSpeedRamping(round);
+
+		embed.fields.splice(3, 0, {
+			name: 'Ramping',
+			value: stripIndents`
+				Health: ${healthRampFactor}x
+				Speed: ${speedRampFactor}x`,
+		});
+	}
 
 	return embed;
 };
@@ -151,9 +164,7 @@ const getLength = (round: number, mode: Gamemode) => {
 		if (end > longest) longest = end;
 	}
 
-	longest /= 60;
-
-	return roundDec(longest, 2);
+	return roundDec(longest / 60, 2);
 };
 
 const getBloonSets = (round: number) => {
