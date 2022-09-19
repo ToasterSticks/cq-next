@@ -3,8 +3,9 @@ import {
 	InteractionResponseType,
 	type ApplicationCommandType,
 } from 'discord-api-types/v10';
+import { GAME_VERSION_MAJOR } from '../../constants/bloons';
 import type { Command } from '../../http-interactions';
-import { Constants, getOption } from '../../util';
+import { getOption } from '../../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'tierlist',
@@ -15,7 +16,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			description: 'The version of to send the tierlist for',
 			type: ApplicationCommandOptionType.Integer,
 			min_value: 1,
-			max_value: Constants.GAME_VERSION_MAJOR,
+			max_value: GAME_VERSION_MAJOR,
 			required: true,
 		},
 	],

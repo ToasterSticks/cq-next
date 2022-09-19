@@ -1,15 +1,18 @@
 import {
 	InteractionType,
+	MessageFlags,
 	type APIInteraction,
 	type APIApplicationCommandInteraction,
 	type APIMessageComponentInteraction,
 	type APIModalSubmitInteraction,
 	type RESTPostAPIInteractionFollowupJSONBody,
+	type APIInteractionResponseCallbackData,
 } from 'discord-api-types/v10';
 import nacl from 'tweetnacl';
 import { Buffer } from 'buffer';
 import type { File, InteractionHandler, InteractionHandlerReturn } from './types';
 import type { CommandStore } from './handler';
+import { getOption } from '../util';
 
 const makeValidator =
 	({ publicKey }: { publicKey: string }) =>
@@ -100,6 +103,14 @@ export const interaction = ({
 				const response = await (handler as InteractionHandler<APIApplicationCommandInteraction>)(
 					interaction as APIApplicationCommandInteraction
 				);
+
+				if (
+					'options' in interaction.data &&
+					'data' in response &&
+					response.data &&
+					getOption<number>(interaction.data.options, 'hide', true)
+				)
+					(response.data as APIInteractionResponseCallbackData).flags = MessageFlags.Ephemeral;
 
 				return createResponse(response);
 			} catch {

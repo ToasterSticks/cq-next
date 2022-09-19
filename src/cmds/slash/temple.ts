@@ -5,6 +5,7 @@ import {
 	type ApplicationCommandType,
 	type APIApplicationCommandInteractionDataSubcommandOption,
 	type APIEmbed,
+	type APIApplicationCommandInteractionDataOption,
 } from 'discord-api-types/v10';
 import { stripIndents } from 'common-tags';
 import { Colors, Temple, TSG } from '../../constants/bloons';
@@ -44,24 +45,21 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	],
 
 	exec: ({ data: { options } }) => {
-		const sacrificeOptions = getOption<APIApplicationCommandInteractionDataSubcommandOption[]>(
+		const isSacSubcommand = getOption<APIApplicationCommandInteractionDataSubcommandOption[]>(
 			options,
 			'from-sacrifice'
 		);
 
-		const configurationOptions = getOption<APIApplicationCommandInteractionDataSubcommandOption[]>(
-			options,
-			'max'
-		);
-
-		let embed: APIEmbed;
-
 		try {
-			embed = sacrificeOptions
-				? handleFromSacrifice(sacrificeOptions)
-				: handleMax(configurationOptions!);
+			const embed = isSacSubcommand ? handleFromSacrifice(options!) : handleMax(options!);
+
+			return {
+				type: InteractionResponseType.ChannelMessageWithSource,
+				data: { embeds: [embed] },
+			};
 		} catch (error) {
 			const { message } = error as Error;
+
 			return {
 				type: InteractionResponseType.ChannelMessageWithSource,
 				data: {
@@ -70,21 +68,14 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 				},
 			};
 		}
-
-		return {
-			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { embeds: [embed] },
-		};
 	},
 };
 
-const handleFromSacrifice = (
-	options: APIApplicationCommandInteractionDataSubcommandOption[]
-): APIEmbed => {
-	const primary = getOption<number>(options, 'primary') ?? 0;
-	const military = getOption<number>(options, 'military') ?? 0;
-	const magic = getOption<number>(options, 'magic') ?? 0;
-	const support = getOption<number>(options, 'support') ?? 0;
+const handleFromSacrifice = (options: APIApplicationCommandInteractionDataOption[]): APIEmbed => {
+	const primary = getOption<number>(options, 'primary', true) ?? 0;
+	const military = getOption<number>(options, 'military', true) ?? 0;
+	const magic = getOption<number>(options, 'magic', true) ?? 0;
+	const support = getOption<number>(options, 'support', true) ?? 0;
 
 	const embed: APIEmbed = {
 		title: 'Temple Stats',
@@ -112,8 +103,8 @@ const handleFromSacrifice = (
 	return embed;
 };
 
-const handleMax = (options: APIApplicationCommandInteractionDataSubcommandOption[]): APIEmbed => {
-	const configuration = getOption<string, true>(options, 'configuration');
+const handleMax = (options: APIApplicationCommandInteractionDataOption[]): APIEmbed => {
+	const configuration = getOption<string, true>(options, 'configuration', true);
 	if (!isValidConfiguration(configuration))
 		throw new Error(
 			stripIndents`Please enter a valid temple set!

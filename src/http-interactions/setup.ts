@@ -7,6 +7,7 @@ import {
 } from 'discord-api-types/v10';
 import { Buffer } from 'buffer';
 import type { Application } from './handler';
+import { addHideOptions } from '../util';
 
 const btoa = (value: string) => Buffer.from(value, 'binary').toString('base64');
 
@@ -77,7 +78,11 @@ export const setup = ({ applicationId, applicationSecret, guildId, commands }: A
 					applicationId,
 					guildId,
 					// eslint-disable-next-line
-					commands: commands.map(({ exec: _, components: __, ...c }) => c),
+					commands: commands.map(({ exec: _, components: __, ...c }) => {
+						c.options ??= [];
+						addHideOptions(c.options);
+						return c;
+					}),
 				},
 				bearer
 			);

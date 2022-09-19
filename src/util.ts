@@ -3,6 +3,7 @@ import {
 	ComponentType,
 	InteractionResponseType,
 	RouteBases,
+	ApplicationCommandOptionType,
 	type APIApplicationCommandInteractionDataBasicOption,
 	type APIApplicationCommandInteractionDataOption,
 	type APIApplicationCommandInteractionDataSubcommandOption,
@@ -10,6 +11,8 @@ import {
 	type APIModalSubmission,
 	type APIActionRowComponent,
 	type APIMessageActionRowComponent,
+	type APIApplicationCommandOption,
+	type APIApplicationCommandSubcommandOption,
 } from 'discord-api-types/v10';
 import { COSTS, UPGRADE_NAMES, type BLOONOLOGY_TOWER_STATS } from './constants/bloons';
 import type { ValidTowerPath } from './types';
@@ -44,9 +47,20 @@ export const getOption = <
 	R extends boolean = false
 >(
 	options: APIApplicationCommandInteractionDataOption[] | undefined,
-	name: string
+	name: string,
+	hoist = false
 ): R extends true ? T : T | null => {
-	const option = options?.find((option) => option.name === name);
+	let hoisted = options;
+
+	if (hoist && hoisted) {
+		if (hoisted[0]?.type === ApplicationCommandOptionType.SubcommandGroup)
+			hoisted = hoisted[0].options ?? [];
+
+		if (hoisted[0]?.type === ApplicationCommandOptionType.Subcommand)
+			hoisted = hoisted[0].options ?? [];
+	}
+
+	const option = hoisted?.find((option) => option.name === name);
 
 	return ((option && ('value' in option ? option.value : option.options)) ?? null) as R extends true
 		? T
@@ -173,4 +187,24 @@ export const toTitleCase = (str: string, delim: string) =>
 export const addNumberSeparator = (num: number) => {
 	const digits = (Math.log(num) * Math.LOG10E + 1) | 0;
 	return digits > 4 ? num.toLocaleString() : num.toString();
+};
+
+export const addHideOptions = (
+	options: (APIApplicationCommandOption | APIApplicationCommandSubcommandOption)[]
+) => {
+	const hasSubcommand = options.filter(
+		(int): int is APIApplicationCommandSubcommandOption =>
+			int.type === ApplicationCommandOptionType.Subcommand ||
+			int.type === ApplicationCommandOptionType.SubcommandGroup
+	);
+
+	if (hasSubcommand.length)
+		hasSubcommand.forEach((option) => ((option.options ??= []), addHideOptions(option.options)));
+	else
+		options.push({
+			name: 'hide',
+			description: 'Whether to hide the response',
+			choices: [{ name: 'Yes', value: 1 }],
+			type: ApplicationCommandOptionType.Integer,
+		});
 };
