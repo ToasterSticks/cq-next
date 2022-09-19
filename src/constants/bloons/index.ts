@@ -7627,6 +7627,8 @@ const UPGRADE_NAMES = {
 	},
 } as const;
 
+const GAME_VERSION_MAJOR = 32;
+
 export {
 	Bosses,
 	Colors,
@@ -7648,4 +7650,5 @@ export {
 	TSG,
 	BLOONOLOGY_TOWER_STATS,
 	UPGRADE_NAMES,
+	GAME_VERSION_MAJOR,
 };

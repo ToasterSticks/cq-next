@@ -11,7 +11,7 @@
 	"dependencies": {
 		"buffer": "^6.0.3",
 		"common-tags": "^1.8.2",
-		"discord-api-types": "0.37.10",
+		"discord-api-types": "^0.37.10",
 		"itty-router": "^2.6.1",
 		"tweetnacl": "^1.0.3"
 	},
