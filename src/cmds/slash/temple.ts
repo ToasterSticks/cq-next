@@ -96,7 +96,10 @@ const handleFromSacrifice = (options: APIApplicationCommandInteractionDataOption
 			},
 			{
 				name: `Support sacrifice ($${support})`,
-				value: Temple.SUPPORT[0] + '\n' + levelToString(cashToLevel(support), 'SUPPORT'),
+				value:
+					Temple.SUPPORT[0] +
+					'\n' +
+					levelToString(cashToLevel(support), 'SUPPORT').replace('\u200b', ''),
 			},
 		],
 	};
@@ -145,14 +148,13 @@ const handleMax = (options: APIApplicationCommandInteractionDataOption[]): APIEm
 		});
 	});
 
-	embed.fields[3].value = embed.fields[3].value.trim();
-
 	return embed;
 };
 
 const cashToLevel = (cash: number) => {
 	const sacrificeLevels = [300, 1000, 2000, 4000, 7500, 10000, 15000, 25000, 50000];
-	return sacrificeLevels.findIndex((level) => cash < level) ?? 9;
+	const idx = sacrificeLevels.findIndex((level) => cash < level);
+	return idx !== 1 ? idx : 9;
 };
 
 const levelToString = (level: number, towerType: keyof typeof Temple) => {
