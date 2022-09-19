@@ -1,4 +1,6 @@
 import {
+	ButtonStyle,
+	ComponentType,
 	InteractionResponseType,
 	RouteBases,
 	type APIApplicationCommandInteractionDataBasicOption,
@@ -6,7 +8,11 @@ import {
 	type APIApplicationCommandInteractionDataSubcommandOption,
 	type APIInteractionResponse,
 	type APIModalSubmission,
+	type APIActionRowComponent,
+	type APIMessageActionRowComponent,
 } from 'discord-api-types/v10';
+import { COSTS, UPGRADE_NAMES, type BLOONOLOGY_TOWER_STATS } from './constants/bloons';
+import type { ValidTowerPath } from './types';
 
 export const mapFiles = <T>(context: __WebpackModuleApi.RequireContext) =>
 	context.keys().map<T>((path) => context(path).command);
@@ -56,3 +62,114 @@ export const getModalValue = (data: APIModalSubmission, name: string) => {
 export const Constants = {
 	GAME_VERSION_MAJOR: 32,
 } as const;
+
+export class Towers {
+	static pathTierFromUpgradeSet = (upgradeSet: string): [number, number] => {
+		const pathArr = [...upgradeSet];
+		const sortedUpgrades = [...pathArr].sort();
+		const tier = sortedUpgrades[2];
+		const path = pathArr.findIndex((u) => u === tier) + 1;
+		return [path, +tier];
+	};
+
+	static towerUpgradeFromTowerAndPathAndTier = (
+		tower: keyof typeof BLOONOLOGY_TOWER_STATS,
+		path: number,
+		tier: number
+	) => {
+		if (isNaN(path)) throw new Error('Second argument `path` must be 1, 2, or 3');
+
+		if (path < 1 || path > 3) throw new Error('Second argument `path` must be 1, 2, or 3');
+
+		if (isNaN(tier))
+			throw new Error('Third argument `tier` must be an integer between 0 and 5 inclusive');
+
+		if (tier < 0 || tier > 5)
+			throw new Error('Third argument `tier` must be an integer between 0 and 5 inclusive');
+
+		const upgradeInt = tier * Math.pow(10, 3 - path);
+		const upgradeStr = tier ? upgradeInt.toString().padStart(3, '0') : '222';
+
+		return toTitleCase(
+			UPGRADE_NAMES[tower][upgradeStr as keyof typeof UPGRADE_NAMES[typeof tower]],
+			'_'
+		);
+	};
+
+	static crossPathTierFromUpgradeSet = (upgradeSet: string): [number, number] => {
+		const upgrades = upgradeSet.split('');
+		const sortedUpgrades = [...upgrades].sort();
+		const crossTier = sortedUpgrades[1];
+		let crossPath = upgrades.findIndex((u) => u === crossTier) + 1;
+		if (sortedUpgrades[1] === sortedUpgrades[2]) {
+			upgrades[crossPath - 1] = '0';
+			crossPath = upgrades.findIndex((u) => u === crossTier) + 1;
+		}
+
+		return [crossPath, +crossTier];
+	};
+
+	static totalTowerUpgradeCrosspathCost = (towerName: keyof typeof COSTS, upgrade: string) => {
+		const [path, tier] = Towers.pathTierFromUpgradeSet(upgrade);
+		const [crossPath, crossTier] = Towers.crossPathTierFromUpgradeSet(upgrade);
+		const tower = COSTS[towerName];
+
+		let totalCost = tower.cost;
+
+		for (let i = 0; i < tier; i++) totalCost += tower.upgrades[path as ValidTowerPath][i];
+		for (let i = 0; i < crossTier; i++) totalCost += tower.upgrades[crossPath as ValidTowerPath][i];
+
+		return totalCost;
+	};
+
+	static totalTowerUpgradeCrosspathCostMult = (
+		towerName: keyof typeof COSTS,
+		upgrade: string,
+		difficulty: keyof typeof PRICE_MULTIPLIER
+	) => {
+		const [path, tier] = Towers.pathTierFromUpgradeSet(upgrade);
+		const [crossPath, crossTier] = Towers.crossPathTierFromUpgradeSet(upgrade);
+		const tower = COSTS[towerName];
+
+		let totalCost = Towers.difficultyPriceMult(tower.cost, difficulty);
+
+		for (let i = 0; i < tier; i++)
+			totalCost += Towers.difficultyPriceMult(
+				tower.upgrades[path as ValidTowerPath][i],
+				difficulty
+			);
+
+		for (let i = 0; i < crossTier; i++)
+			totalCost += Towers.difficultyPriceMult(
+				tower.upgrades[crossPath as ValidTowerPath][i],
+				difficulty
+			);
+
+		return totalCost;
+	};
+
+	static difficultyPriceMult = (price: number, difficulty: keyof typeof PRICE_MULTIPLIER) =>
+		Math.round((price * PRICE_MULTIPLIER[difficulty]) / 5) * 5;
+}
+
+const PRICE_MULTIPLIER = {
+	EASY: 0.85,
+	MEDIUM: 1,
+	HARD: 1.08,
+	IMPOPPABLE: 1.2,
+} as const;
+
+export const REPORT_BUG_BUTTON_ROW: APIActionRowComponent<APIMessageActionRowComponent> = {
+	type: ComponentType.ActionRow,
+	components: [
+		{
+			type: ComponentType.Button,
+			style: ButtonStyle.Link,
+			label: 'Report a bug',
+			url: 'https://discord.gg/AtCA2ZMNng',
+		},
+	],
+};
+
+export const toTitleCase = (str: string, delim: string) =>
+	str.replace(RegExp(`(?:^|${delim})(\\w)`, 'g'), (_, char) => ' ' + char.toUpperCase()).trim();

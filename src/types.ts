@@ -13,3 +13,5 @@ interface FullTagData {
 }
 
 export type TagData = FullTagData | Omit<FullTagData, 'embeds'> | Omit<FullTagData, 'content'>;
+
+export type ValidTowerPath = 1 | 2 | 3;

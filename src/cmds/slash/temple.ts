@@ -1,4 +1,3 @@
-import { stripIndents } from 'common-tags';
 import {
 	ApplicationCommandOptionType,
 	InteractionResponseType,
@@ -7,6 +6,7 @@ import {
 	type APIApplicationCommandInteractionDataSubcommandOption,
 	type APIEmbed,
 } from 'discord-api-types/v10';
+import { stripIndents } from 'common-tags';
 import { Colors, Temple, TSG } from '../../constants/bloons';
 import type { Command } from '../../http-interactions';
 import { getOption } from '../../util';
@@ -167,7 +167,7 @@ const levelToString = (level: number, towerType: keyof typeof Temple) => {
 };
 
 const isValidConfiguration = (config: string) => {
-	if (isNaN(+config)) return false;
+	if (!/^\d{4}$/.test(config)) return false;
 
 	const upgrades = [...config].map((x) => +x);
 	const total = upgrades.reduce((a, b) => a + b, 0);
