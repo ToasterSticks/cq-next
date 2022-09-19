@@ -173,3 +173,8 @@ export const REPORT_BUG_BUTTON_ROW: APIActionRowComponent<APIMessageActionRowCom
 
 export const toTitleCase = (str: string, delim: string) =>
 	str.replace(RegExp(`(?:^|${delim})(\\w)`, 'g'), (_, char) => ' ' + char.toUpperCase()).trim();
+
+export const addNumberSeparator = (num: number) => {
+	const digits = (Math.log(num) * Math.LOG10E + 1) | 0;
+	return digits > 4 ? num.toLocaleString() : num.toString();
+};

@@ -9,7 +9,13 @@ import { stripIndents } from 'common-tags';
 import { BLOONOLOGY_TOWER_STATS, Colors, COSTS } from '../../constants/bloons';
 import type { Command } from '../../http-interactions';
 import type { ValidTowerPath } from '../../types';
-import { getOption, REPORT_BUG_BUTTON_ROW, toTitleCase, Towers } from '../../util';
+import {
+	addNumberSeparator,
+	getOption,
+	REPORT_BUG_BUTTON_ROW,
+	toTitleCase,
+	Towers,
+} from '../../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'tower',
@@ -105,18 +111,19 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			fields: [
 				{
 					name: 'Cost ($)',
-					value: stripIndents`Easy: ${Towers.difficultyPriceMult(upgradeCost, 'EASY')}
-						Normal: ${upgradeCost}
-						Hard: ${Towers.difficultyPriceMult(upgradeCost, 'HARD')}
-						Impoppable: ${Towers.difficultyPriceMult(upgradeCost, 'IMPOPPABLE')}`,
+					value: stripIndents`
+						Easy: ${addNumberSeparator(Towers.difficultyPriceMult(upgradeCost, 'EASY'))}
+						Normal: ${addNumberSeparator(upgradeCost)}
+						Hard: ${addNumberSeparator(Towers.difficultyPriceMult(upgradeCost, 'HARD'))}
+						Impoppable: ${addNumberSeparator(Towers.difficultyPriceMult(upgradeCost, 'IMPOPPABLE'))}`,
 					inline: true,
 				},
 				{
 					name: 'Total cost ($)',
-					value: stripIndents`Easy: ${easyTotalCost}
-						Medium: ${totalCost}
-						Hard: ${hardTotalCost}
-						Impoppable: ${impopTotalCost}`,
+					value: stripIndents`Easy: ${addNumberSeparator(easyTotalCost)}
+						Medium: ${addNumberSeparator(totalCost)}
+						Hard: ${addNumberSeparator(hardTotalCost)}
+						Impoppable: ${addNumberSeparator(impopTotalCost)}`,
 					inline: true,
 				},
 			],
