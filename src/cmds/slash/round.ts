@@ -3,7 +3,6 @@ import {
 	InteractionResponseType,
 	type ApplicationCommandType,
 	type APIEmbed,
-	type APIEmbedField,
 } from 'discord-api-types/v10';
 import {
 	ABR_INCOME,
@@ -18,6 +17,7 @@ import {
 import { stripIndents } from 'common-tags';
 import type { Command } from '../../http-interactions';
 import { Enemies, getOption, roundDec } from '../../util';
+import type { WithRequiredProp } from '../../types';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'round',
@@ -116,7 +116,7 @@ const generateRegularEmbed = (round: number, mode: Gamemode) => {
 			: 'ABR cash data not available for round 1-2'
 		: NORMAL_INCOME[round].cashThisRound;
 
-	const embed: APIEmbed & { fields: APIEmbedField[] } = {
+	const embed: WithRequiredProp<APIEmbed, 'fields'> = {
 		color: Colors.CYBER,
 		title: `Round ${round} ${isABR ? 'ABR' : ''}`,
 		description: roundContent,

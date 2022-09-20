@@ -6,12 +6,12 @@ import {
 	type APIApplicationCommandInteractionDataSubcommandOption,
 	type APIEmbed,
 	type APIApplicationCommandInteractionDataOption,
-	type APIEmbedField,
 } from 'discord-api-types/v10';
 import { stripIndents } from 'common-tags';
 import { Colors, Temple, TSG, TowerType } from '../../constants/bloons';
 import type { Command } from '../../http-interactions';
 import { getOption } from '../../util';
+import type { WithRequiredProp } from '../../types';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'temple',
@@ -78,7 +78,7 @@ const handleFromSacrifice = (options: APIApplicationCommandInteractionDataOption
 	const magic = getOption<number>(options, 'magic', true) ?? 0;
 	const support = getOption<number>(options, 'support', true) ?? 0;
 
-	const embed: APIEmbed & { fields: APIEmbedField[] } = {
+	const embed: WithRequiredProp<APIEmbed, 'fields'> = {
 		color: Colors.YELLOW,
 		title: 'Temple Stats',
 		fields: [
@@ -131,7 +131,7 @@ const handleMax = (options: APIApplicationCommandInteractionDataOption[]): APIEm
       For example if you had a \`1101\` temple that you've max-sacrificed on all 4 categories, you would get \`1101\` + \`1111\` = \`2212\``
 		);
 
-	const embed: APIEmbed & { fields: APIEmbedField[] } = {
+	const embed: WithRequiredProp<APIEmbed, 'fields'> = {
 		color: Colors.YELLOW,
 		title: `Max temple stats for ${configuration}`,
 		fields: [],
