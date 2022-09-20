@@ -238,3 +238,50 @@ export const roundDec = (num: number, precision: number) => {
 	const factor = 10 ** precision;
 	return Math.round((num + Number.EPSILON) * factor) / factor;
 };
+
+const mapBigrams = (str: string) => {
+	const bigrams: Record<string, number> = {};
+	for (let i = 0; i < str.length - 1; i++) {
+		const bigram = str.slice(i, i + 2);
+		const count = bigrams[bigram] ?? 0;
+		bigrams[bigram] = count + 1;
+	}
+	return bigrams;
+};
+
+const countCommonBigrams = (bigrams: Record<string, number>, str: string) => {
+	let count = 0;
+	for (let i = 0; i < str.length - 1; i++) {
+		const bigram = str.substring(i, i + 2);
+		if (bigrams[bigram]) count++;
+	}
+	return count;
+};
+
+export const diceCoefficient = (stringA: string, stringB: string) => {
+	if (stringA === stringB) return 1;
+	else if (stringA.length < 2 || stringB.length < 2) return 0;
+	const bigramsA = mapBigrams(stringA);
+
+	const lengthA = stringA.length - 1;
+	const lengthB = stringB.length - 1;
+
+	const dice = (2 * countCommonBigrams(bigramsA, stringB)) / (lengthA + lengthB);
+
+	return dice;
+};
+
+export const bestMatch = <T extends string>(str: string, arr: T[]): T => {
+	const ratings = [];
+	let bestMatchIndex = 0;
+
+	for (let i = 0; i < arr.length; i++) {
+		const currentTargetString = arr[i];
+		const currentRating = diceCoefficient(str, currentTargetString);
+		ratings.push(currentRating);
+
+		if (currentRating > ratings[bestMatchIndex]) bestMatchIndex = i;
+	}
+
+	return arr[bestMatchIndex];
+};

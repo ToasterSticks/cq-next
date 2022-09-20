@@ -44,7 +44,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 
 	exec: async ({ data: { options } }) => {
 		const round = getOption<number, true>(options, 'round');
-		const mode = getOption<number>(options, 'mode') ?? Gamemode.NORMAL;
+		const mode = getOption<Gamemode>(options, 'mode') ?? Gamemode.NORMAL;
 
 		if (round > 140 || (mode && round > 100)) {
 			const embed = generateFreeplayEmbed(round, mode);
