@@ -206,7 +206,7 @@ export const REPORT_BUG_BUTTON_ROW: APIActionRowComponent<APIMessageActionRowCom
 			type: ComponentType.Button,
 			style: ButtonStyle.Link,
 			label: 'Report a bug',
-			url: 'https://discord.gg/AtCA2ZMNng',
+			url: 'https://discord.gg/hZdJpMtdwf',
 		},
 	],
 };
