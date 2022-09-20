@@ -4,7 +4,7 @@ import {
 	type ApplicationCommandType,
 	type APIEmbed,
 } from 'discord-api-types/v10';
-import { MAPS } from '../../constants/bloons';
+import { Colors, MAPS } from '../../constants/bloons';
 import type { Command } from '../../http-interactions';
 import { bestMatch, getOption, REPORT_BUG_BUTTON_ROW, toTitleCase } from '../../util';
 
@@ -29,6 +29,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		const { lenStr, objects, clearOutCost, waterComposition, ends, ver } = MAPS[similar];
 
 		const embed: APIEmbed = {
+			color: Colors.CYBER,
 			title: toTitleCase(similar, '_'),
 			fields: [
 				{
