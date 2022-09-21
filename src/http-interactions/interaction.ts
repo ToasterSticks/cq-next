@@ -119,6 +119,8 @@ export const interaction = ({
 					customIdRestArgs
 				);
 
+				if (interaction.member) interaction.user = interaction.member.user;
+
 				if (
 					'options' in interaction.data &&
 					'data' in response &&

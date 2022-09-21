@@ -13,7 +13,7 @@ import { stripIndents } from 'common-tags';
 import { BLOONOLOGY_TOWER_STATS, Colors, COSTS } from '../../constants/bloons';
 import type { Command } from '../../http-interactions';
 import type { ValidTowerPath } from '../../types';
-import { getOption, REPORT_BUG_BUTTON_ROW, toTitleCase, Towers } from '../../util';
+import { deferUpdate, getOption, REPORT_BUG_BUTTON_ROW, toTitleCase, Towers } from '../../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'tower',
@@ -150,7 +150,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	},
 
 	components: {
-		summary: async ({ message: { components } }, [tower]) => {
+		summary: async ({ user, message: { interaction, components } }, [tower]) => {
+			if (user!.id !== interaction!.user.id) return deferUpdate();
+
 			const towerCasted = tower as keyof typeof BLOONOLOGY_TOWER_STATS;
 			const body = await fetch(BLOONOLOGY_TOWER_STATS[towerCasted]).then((res) =>
 				res.ok ? res.text() : null

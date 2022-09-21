@@ -9,13 +9,11 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'ping',
 	description: 'Reply with pong',
 
-	exec: ({ member }) => {
-		const userID = member!.user.id;
-
+	exec: ({ user }) => {
 		return {
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: {
-				content: `<@${userID}>, pong!`,
+				content: `<@${user!.id}>, pong!`,
 				flags: MessageFlags.Ephemeral,
 			},
 		};
