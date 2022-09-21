@@ -2,8 +2,12 @@ import {
 	ApplicationCommandOptionType,
 	InteractionResponseType,
 	MessageFlags,
+	ButtonStyle,
+	ComponentType,
 	type ApplicationCommandType,
 	type APIEmbed,
+	type APIMessageActionRowComponent,
+	type APIActionRowComponent,
 } from 'discord-api-types/v10';
 import { stripIndents } from 'common-tags';
 import { BLOONOLOGY_TOWER_STATS, Colors, COSTS } from '../../constants/bloons';
@@ -123,13 +127,109 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			],
 		};
 
+		const row: APIActionRowComponent<APIMessageActionRowComponent> = {
+			type: ComponentType.ActionRow,
+			components: [
+				{
+					type: ComponentType.Button,
+					style: ButtonStyle.Primary,
+					label: 'Full upgrade summary',
+					custom_id: 'summary:' + tower,
+				},
+				REPORT_BUG_BUTTON_ROW.components[0],
+			],
+		};
+
 		return {
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: {
 				embeds: [embed],
-				components: [REPORT_BUG_BUTTON_ROW],
+				components: [row],
 			},
 		};
+	},
+
+	components: {
+		summary: async ({ message: { components } }, [tower]) => {
+			const towerCasted = tower as keyof typeof BLOONOLOGY_TOWER_STATS;
+			const body = await fetch(BLOONOLOGY_TOWER_STATS[towerCasted]).then((res) =>
+				res.ok ? res.text() : null
+			);
+
+			if (!body)
+				return {
+					type: InteractionResponseType.ChannelMessageWithSource,
+					data: {
+						content: 'Something went wrong while fetching the tower data.',
+						flags: MessageFlags.Ephemeral,
+					},
+				};
+
+			const upgradeDescriptions = body.split('\r\n\r\n');
+
+			const tierUpgrades = [];
+
+			for (let tier = 1; tier <= 5; tier++)
+				for (let i = 0; i < 3; i++)
+					tierUpgrades.push('000'.slice(0, i) + `${tier}` + '000'.slice(i + 1));
+
+			const pathDescriptions = tierUpgrades.map((u) =>
+				cleanDesc(upgradeDescriptions.find((desc) => desc.slice(0, 3) == u)?.slice(3) ?? '')
+			);
+
+			const splitTexts = [
+				'__Changes from 0-0-0__',
+				'Changes from 000:',
+				'__Changes from Previous Tier__',
+				'Changes from previous tier:',
+				'__Crosspath Benefits__',
+				'Crosspath Benefits:',
+			];
+
+			const pathBenefits = pathDescriptions.map((desc) => {
+				const benefitsGroup: string | undefined = desc
+					.split(new RegExp(splitTexts.join('|'), 'i'))[1]
+					?.trim();
+
+				return (
+					benefitsGroup
+						?.split('\n')
+						.map((n) => `<:_:875985515357282316> ${n}`)
+						.join('\n') ?? 'No benefits'
+				);
+			});
+
+			const headers = tierUpgrades.map((u) => {
+				const [path, tier] = Towers.pathTierFromUpgradeSet(u);
+				const upgradeName = Towers.towerUpgradeFromTowerAndPathAndTier(towerCasted, path, tier);
+				return `${upgradeName} (${u})`;
+			});
+
+			const baseDescription = cleanDesc(
+				pathDescriptions.find((desc) => desc.slice(0, 3) === '000')?.slice(3) ?? ''
+			)
+				.split(/(?:\n|\r)+/)
+				.map((s) => s.trim().replace(/\u200E/g, ''))
+				.filter((s) => s.length > 0)
+				.join(' • ');
+
+			const embed: APIEmbed = {
+				color: Colors.CYBER,
+				title: `${toTitleCase(towerCasted, '-')} (full upgrade summary)`,
+				description: baseDescription,
+				fields: headers.map((h, i) => ({ name: h, value: pathBenefits[i], inline: true })),
+			};
+
+			components![0].components[0].disabled = true;
+
+			return {
+				type: InteractionResponseType.UpdateMessage,
+				data: {
+					embeds: [embed],
+					components: components ?? [REPORT_BUG_BUTTON_ROW],
+				},
+			};
+		},
 	},
 };
 
