@@ -51,8 +51,13 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			components![0].components.forEach((button, i) => {
 				if (button.type !== ComponentType.Button) return;
 
-				button.style = i === +answer ? ButtonStyle.Success : ButtonStyle.Danger;
 				button.disabled = true;
+				button.style =
+					i === +answer
+						? ButtonStyle.Success
+						: i === +response
+						? ButtonStyle.Danger
+						: ButtonStyle.Secondary;
 			});
 
 			const correctChoiceStr = `The answer was **${LETTER_CHOICES[+answer]}**.`;
