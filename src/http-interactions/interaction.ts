@@ -114,12 +114,12 @@ export const interaction = ({
 
 				if (!handler) return new Response(null, { status: 500 });
 
+				if (interaction.member) interaction.user = interaction.member.user;
+
 				const response = await (handler as InteractionHandler<APIApplicationCommandInteraction>)(
 					interaction as APIApplicationCommandInteraction,
 					customIdRestArgs
 				);
-
-				if (interaction.member) interaction.user = interaction.member.user;
 
 				if (
 					'options' in interaction.data &&
