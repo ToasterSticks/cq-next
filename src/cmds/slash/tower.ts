@@ -210,6 +210,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			const embed: APIEmbed = {
 				color: Colors.CYBER,
 				title: `${toTitleCase(towerCasted, '-')} (full upgrade summary)`,
+				description: cleanDesc(upgradeDescriptions[0]).slice(3),
 				fields: headers.map((h, i) => ({ name: h, value: pathBenefits[i], inline: true })),
 			};
 
