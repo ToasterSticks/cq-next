@@ -173,10 +173,10 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 
 			for (let tier = 1; tier <= 5; tier++)
 				for (let i = 0; i < 3; i++)
-					tierUpgrades.push('000'.slice(0, i) + `${tier}` + '000'.slice(i + 1));
+					tierUpgrades.push('000'.slice(0, i) + tier + '000'.slice(i + 1));
 
 			const pathDescriptions = tierUpgrades.map((u) =>
-				cleanDesc(upgradeDescriptions.find((desc) => desc.slice(0, 3) == u)?.slice(3) ?? '')
+				cleanDesc(upgradeDescriptions.find((desc) => desc.slice(0, 3) === u) ?? '')
 			);
 
 			const splitTexts = [
@@ -207,18 +207,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 				return `${upgradeName} (${u})`;
 			});
 
-			const baseDescription = cleanDesc(
-				pathDescriptions.find((desc) => desc.slice(0, 3) === '000')?.slice(3) ?? ''
-			)
-				.split(/(?:\n|\r)+/)
-				.map((s) => s.trim().replace(/\u200E/g, ''))
-				.filter((s) => s.length > 0)
-				.join(' • ');
-
 			const embed: APIEmbed = {
 				color: Colors.CYBER,
 				title: `${toTitleCase(towerCasted, '-')} (full upgrade summary)`,
-				description: baseDescription,
 				fields: headers.map((h, i) => ({ name: h, value: pathBenefits[i], inline: true })),
 			};
 
@@ -237,7 +228,6 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 
 const cleanDesc = (desc: string) =>
 	desc
-		.toString()
 		.replaceAll('\n', '')
 		.replaceAll('\r \t', '\n')
 		.replaceAll(' \t-', '-    ')
