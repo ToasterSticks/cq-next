@@ -243,7 +243,7 @@ const handleComboSearch = async (
 		fields: [
 			{
 				name: 'Number of combos',
-				value: `${endIndex - 9}-${endIndex} of **${entries.length}**`,
+				value: `${endIndex - 9}-${endIndex - 10 + pageOfEntries.length} of **${entries.length}**`,
 			},
 			{
 				name: 'Tower 1',
