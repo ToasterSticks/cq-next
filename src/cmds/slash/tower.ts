@@ -20,9 +20,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	description: 'Display information for a tower',
 	options: [
 		{
+			type: ApplicationCommandOptionType.String,
 			name: 'tower',
 			description: 'The tower to display information for',
-			type: ApplicationCommandOptionType.String,
 			choices: Object.keys(BLOONOLOGY_TOWER_STATS).map((name) => ({
 				name: toTitleCase(name, '-'),
 				value: name,
@@ -30,11 +30,11 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			required: true,
 		},
 		{
+			type: ApplicationCommandOptionType.String,
 			name: 'path',
 			description: 'The path of the tower to display information for',
 			min_length: 3,
 			max_length: 3,
-			type: ApplicationCommandOptionType.String,
 		},
 	],
 

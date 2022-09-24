@@ -7580,6 +7580,35 @@ const UPGRADE_NAMES = {
 
 const GAME_VERSION_MAJOR = 32;
 
+const RBS_PER_SECOND = {
+	red: 1,
+	blue: 1.4,
+	green: 1.8,
+	yellow: 3.2,
+	pink: 3.5,
+	black: 1.8,
+	white: 2,
+	purple: 3,
+	lead: 1,
+	zebra: 1.8,
+	rainbow: 2.2,
+	ceramic: 2.5,
+	moab: 1,
+	bfb: 0.25,
+	zomg: 0.18,
+	ddt: 2.64,
+	bad: 0.18,
+} as const;
+
+const BASE_LAYER_RBE = {
+	ceramic: 10,
+	moab: 200,
+	bfb: 700,
+	zomg: 4000,
+	ddt: 400,
+	bad: 20000,
+} as const;
+
 export {
 	Bosses,
 	Colors,
@@ -7604,4 +7633,6 @@ export {
 	GAME_VERSION_MAJOR,
 	TowerType,
 	Gamemode,
+	RBS_PER_SECOND,
+	BASE_LAYER_RBE,
 };

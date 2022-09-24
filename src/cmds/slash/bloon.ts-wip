@@ -1,0 +1,112 @@
+import {
+	ApplicationCommandOptionType,
+	InteractionResponseType,
+	MessageFlags,
+	type ApplicationCommandType,
+	type APIEmbed,
+} from 'discord-api-types/v10';
+import { BASE_LAYER_RBE, RBS_PER_SECOND } from '../../constants/bloons';
+import type { Command } from '../../http-interactions';
+import type { SetType } from '../../types';
+import { Enemies, getOption, roundDec, toTitleCase } from '../../util';
+
+export const command: Command<ApplicationCommandType.ChatInput> = {
+	name: 'bloon',
+	description: 'Display information about a bloon type',
+	options: [
+		{
+			type: ApplicationCommandOptionType.String,
+			name: 'bloon',
+			description: 'The bloon to get information about',
+			choices: Enemies.ALL.map((bloon) => ({
+				name: Enemies.MOAB_CLASS.has(bloon as SetType<typeof Enemies.MOAB_CLASS>)
+					? bloon.toUpperCase()
+					: toTitleCase(bloon),
+				value: bloon,
+			})),
+			required: true,
+		},
+		{
+			type: ApplicationCommandOptionType.Integer,
+			name: 'fortified',
+			description: 'Whether the bloon is fortified',
+			choices: [{ name: 'Yes', value: 1 }],
+		},
+		{
+			type: ApplicationCommandOptionType.Integer,
+			name: 'camo',
+			description: 'Whether the bloon is camo',
+			choices: [{ name: 'Yes', value: 1 }],
+		},
+		{
+			type: ApplicationCommandOptionType.Integer,
+			name: 'regrow',
+			description: 'Whether the bloon regrows',
+			choices: [{ name: 'Yes', value: 1 }],
+		},
+		{
+			type: ApplicationCommandOptionType.Integer,
+			name: 'round',
+			description: 'The round the bloon is in',
+			min_value: 1,
+			max_value: 1288555,
+		},
+	],
+
+	exec: ({ data: { options } }) => {
+		const bloon = getOption<typeof Enemies.ALL[number], true>(options, 'bloon');
+		const round = getOption<number>(options, 'round') ?? 1;
+		const fortified = getOption<number>(options, 'fortified');
+		const camo = bloon === 'ddt' ? 1 : getOption<number>(options, 'camo');
+		const regrow = bloon === 'ddt' ? 1 : getOption<number>(options, 'regrow');
+
+		const speedRampFactor = Enemies.getSpeedRamping(round);
+		const healthRampFactor = Enemies.getHealthRamping(round);
+
+		const hasSuperText = Enemies.SUPER_ENEMIES.has(bloon as SetType<typeof Enemies.SUPER_ENEMIES>)
+			? '(super variant too)'
+			: '';
+
+		const speed = RBS_PER_SECOND[bloon] * speedRampFactor;
+		let layerHealth =
+			bloon in BASE_LAYER_RBE ? BASE_LAYER_RBE[bloon as keyof typeof BASE_LAYER_RBE] : 1;
+		if (Enemies.MOAB_CLASS.has(bloon as SetType<typeof Enemies.MOAB_CLASS>))
+			layerHealth *= healthRampFactor;
+		if (bloon === 'ceramic' && round > 80) layerHealth *= 60;
+		if (fortified) {
+			if (['lead', 'ceramic', ...Enemies.MOAB_CLASS].includes(bloon)) layerHealth *= 2;
+			else layerHealth = 4;
+		}
+
+		const embed: APIEmbed = {
+			fields: [
+				{ name: 'Speed', value: `${roundDec(speed).toLocaleString()} RBS/s`, inline: true },
+				{
+					name: 'Layer Health',
+					value: `${roundDec(layerHealth).toLocaleString()} RBE`,
+					inline: true,
+				},
+				{ name: 'Total Health', value: `${enemy.totalRBE(true)} RBE`, inline: true },
+				{ name: 'Vertical Health', value: `${enemy.verticalRBE(true)} RBE`, inline: true },
+				{ name: 'Speed Factor', value: `${speedRampFactor} (x R80)`, inline: true },
+				{ name: 'Health Factor', value: `${healthRampFactor} (x R80)`, inline: true },
+				{ name: 'Direct Children', value: `${enemy.children(true)}`, inline: true },
+				{ name: 'Cash Earned', value: `${enemy.cash(true)}`, inline: true },
+				{ name: 'Cash Factor', value: `${roundHelper.cashFactorForRound(round)}`, inline: true },
+				{
+					name: `Normal Round Appearances ${hasSuperText}`,
+					value: `${enemy.roundAppearances('r', true)}`,
+				},
+				{
+					name: `ABR Round Appearances ${hasSuperText}`,
+					value: `${enemy.roundAppearances('ar', true)}`,
+				},
+			],
+		};
+
+		return {
+			type: InteractionResponseType.ChannelMessageWithSource,
+			data: { embeds: [embed] },
+		};
+	},
+};

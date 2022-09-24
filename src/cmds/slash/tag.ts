@@ -18,9 +18,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	description: 'Display a tag by its name or alias',
 	options: [
 		{
+			type: ApplicationCommandOptionType.String,
 			name: 'query',
 			description: 'The name or alias of the tag',
-			type: ApplicationCommandOptionType.String,
 			required: true,
 		},
 	],

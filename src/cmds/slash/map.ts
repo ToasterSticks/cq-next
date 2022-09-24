@@ -15,9 +15,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	description: 'Get information about a map',
 	options: [
 		{
+			type: ApplicationCommandOptionType.String,
 			name: 'map',
 			description: 'The map to get information about',
-			type: ApplicationCommandOptionType.String,
 			required: true,
 		},
 	],

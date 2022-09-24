@@ -5,7 +5,6 @@ import {
 	type ApplicationCommandType,
 	type APIApplicationCommandInteractionDataSubcommandOption,
 	type APIEmbed,
-	type APIApplicationCommandInteractionDataOption,
 } from 'discord-api-types/v10';
 import { stripIndents } from 'common-tags';
 import { Colors, Temple, TSG, TowerType } from '../../constants/bloons';
@@ -18,25 +17,25 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	description: 'Display temple stats',
 	options: [
 		{
+			type: ApplicationCommandOptionType.Subcommand,
 			name: 'from-sacrifice',
 			description: 'Get temple stats from the amount of money sacrificed to each category',
-			type: ApplicationCommandOptionType.Subcommand,
 			options: ['primary', 'military', 'magic', 'support'].map((category) => ({
+				type: ApplicationCommandOptionType.Integer,
 				name: category,
 				description: `Amount of money sacrificed to the ${category} category`,
 				min_value: 0,
-				type: ApplicationCommandOptionType.Integer,
 			})),
 		},
 		{
+			type: ApplicationCommandOptionType.Subcommand,
 			name: 'max',
 			description: 'Get max temple stats based on category configuration',
-			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
+					type: ApplicationCommandOptionType.String,
 					name: 'configuration',
 					description: 'The configuration of temple sacrifices (eg. 1011)',
-					type: ApplicationCommandOptionType.String,
 					min_length: 4,
 					max_length: 4,
 					required: true,
@@ -52,7 +51,14 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		);
 
 		try {
-			const embed = isSacSubcommand ? handleFromSacrifice(options!) : handleMax(options!);
+			const embed = isSacSubcommand
+				? handleFromSacrifice(
+						getOption<number>(options, 'primary', true) ?? 0,
+						getOption<number>(options, 'military', true) ?? 0,
+						getOption<number>(options, 'magic', true) ?? 0,
+						getOption<number>(options, 'support', true) ?? 0
+				  )
+				: handleMax(getOption<string, true>(options, 'configuration', true));
 
 			return {
 				type: InteractionResponseType.ChannelMessageWithSource,
@@ -72,12 +78,12 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	},
 };
 
-const handleFromSacrifice = (options: APIApplicationCommandInteractionDataOption[]): APIEmbed => {
-	const primary = getOption<number>(options, 'primary', true) ?? 0;
-	const military = getOption<number>(options, 'military', true) ?? 0;
-	const magic = getOption<number>(options, 'magic', true) ?? 0;
-	const support = getOption<number>(options, 'support', true) ?? 0;
-
+const handleFromSacrifice = (
+	primary: number,
+	military: number,
+	magic: number,
+	support: number
+): APIEmbed => {
 	const embed: WithRequiredProp<APIEmbed, 'fields'> = {
 		color: Colors.YELLOW,
 		title: 'Temple Stats',
@@ -116,8 +122,7 @@ const handleFromSacrifice = (options: APIApplicationCommandInteractionDataOption
 	return embed;
 };
 
-const handleMax = (options: APIApplicationCommandInteractionDataOption[]): APIEmbed => {
-	const configuration = getOption<string, true>(options, 'configuration', true);
+const handleMax = (configuration: string): APIEmbed => {
 	if (!isValidConfiguration(configuration))
 		throw new Error(
 			stripIndents`Please enter a valid temple set!

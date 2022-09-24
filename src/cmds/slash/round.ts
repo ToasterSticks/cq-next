@@ -24,17 +24,17 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	description: 'Display information for a round',
 	options: [
 		{
+			type: ApplicationCommandOptionType.Integer,
 			name: 'round',
 			description: 'The round to display information for',
-			type: ApplicationCommandOptionType.Integer,
 			min_value: 1,
 			max_value: 1288555,
 			required: true,
 		},
 		{
+			type: ApplicationCommandOptionType.Integer,
 			name: 'mode',
 			description: 'The game-mode to display information for',
-			type: ApplicationCommandOptionType.Integer,
 			choices: [
 				{ name: 'Normal', value: Gamemode.NORMAL },
 				{ name: 'Alternate Bloons Rounds', value: Gamemode.ABR },
@@ -155,7 +155,7 @@ const generateRegularEmbed = (round: number, mode: Gamemode) => {
 };
 
 const getLength = (round: number, mode: Gamemode) => {
-	const roundArray = BloonLength[mode][round.toString() as keyof typeof BloonLength[typeof round]];
+	const roundArray = BloonLength[mode][round.toString() as keyof typeof BloonLength[number]];
 	let longest = 0;
 	let end = 0;
 
@@ -164,7 +164,7 @@ const getLength = (round: number, mode: Gamemode) => {
 		if (end > longest) longest = end;
 	}
 
-	return roundDec(longest / 60, 2);
+	return roundDec(longest / 60);
 };
 
 const getBloonSets = (round: number) => {

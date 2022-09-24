@@ -13,24 +13,24 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	description: 'Calculate the income of a round',
 	options: [
 		{
+			type: ApplicationCommandOptionType.Integer,
 			name: 'start-round',
 			description: 'The round to start from (can be the only one)',
-			type: ApplicationCommandOptionType.Integer,
 			min_value: 1,
 			max_value: 140,
 			required: true,
 		},
 		{
+			type: ApplicationCommandOptionType.Integer,
 			name: 'end-round',
 			description: 'The round to end at',
-			type: ApplicationCommandOptionType.Integer,
 			min_value: 1,
 			max_value: 140,
 		},
 		{
+			type: ApplicationCommandOptionType.Integer,
 			name: 'mode',
 			description: 'The game-mode to display information for',
-			type: ApplicationCommandOptionType.Integer,
 			choices: [
 				{ name: 'Normal', value: Gamemode.NORMAL },
 				{ name: 'Alternate Bloons Rounds', value: Gamemode.ABR },

@@ -12,9 +12,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	description: 'Return a tierlist for a specific version',
 	options: [
 		{
+			type: ApplicationCommandOptionType.Integer,
 			name: 'version',
 			description: 'The version of to send the tierlist for',
-			type: ApplicationCommandOptionType.Integer,
 			min_value: 1,
 			max_value: GAME_VERSION_MAJOR,
 			required: true,

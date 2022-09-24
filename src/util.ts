@@ -13,6 +13,7 @@ import {
 	type APIMessageActionRowComponent,
 	type APIApplicationCommandOption,
 	type APIApplicationCommandSubcommandOption,
+	type APIButtonComponentWithCustomId,
 } from 'discord-api-types/v10';
 import { COSTS, UPGRADE_NAMES, type BLOONOLOGY_TOWER_STATS } from './constants/bloons';
 import type { ValidTowerPath } from './types';
@@ -175,7 +176,7 @@ export class Enemies {
 		else if (round <= 500) v = (5 * round - 1517) / 2;
 		else v = 5 * round - 2008.5;
 
-		return roundDec(v, 2);
+		return roundDec(v);
 	};
 
 	static getSpeedRamping = (round: number) => {
@@ -188,8 +189,57 @@ export class Enemies {
 		else if (round <= 250) v = 4.5 + (round - 201) * 0.02;
 		else v = 6.0 + (round - 252) * 0.02;
 
-		return roundDec(v, 2);
+		return roundDec(v);
 	};
+
+	static BLOONS = new Set([
+		'red',
+		'blue',
+		'green',
+		'yellow',
+		'pink',
+		'purple',
+		'white',
+		'black',
+		'zebra',
+		'lead',
+		'rainbow',
+		'ceramic',
+	] as const);
+
+	static MOAB_CLASS = new Set(['moab', 'bfb', 'zomg', 'ddt', 'bad'] as const);
+
+	static SUPER_ENEMIES = new Set([
+		'purple',
+		'white',
+		'black',
+		'zebra',
+		'lead',
+		'rainbow',
+		'ceramic',
+	] as const);
+
+	static get ALL() {
+		return [...Enemies.BLOONS, ...Enemies.MOAB_CLASS] as (
+			| 'red'
+			| 'blue'
+			| 'green'
+			| 'yellow'
+			| 'pink'
+			| 'purple'
+			| 'white'
+			| 'black'
+			| 'zebra'
+			| 'lead'
+			| 'rainbow'
+			| 'ceramic'
+			| 'moab'
+			| 'bfb'
+			| 'zomg'
+			| 'ddt'
+			| 'bad'
+		)[];
+	}
 }
 
 const PRICE_MULTIPLIER = {
@@ -211,8 +261,13 @@ export const REPORT_BUG_BUTTON_ROW: APIActionRowComponent<APIMessageActionRowCom
 	],
 };
 
-export const toTitleCase = (str: string, delim: string) =>
-	str.replace(RegExp(`(?:^|${delim})(\\w)`, 'g'), (_, char) => ' ' + char.toUpperCase()).trim();
+export const toTitleCase = (str: string, delim?: string) =>
+	str
+		.replace(
+			RegExp(`(?:^${delim ? '|' + delim : ''})(\\w)`, 'g'),
+			(_, char) => ' ' + char.toUpperCase()
+		)
+		.trim();
 
 export const addHideOptions = (
 	options: (APIApplicationCommandOption | APIApplicationCommandSubcommandOption)[]
@@ -227,14 +282,14 @@ export const addHideOptions = (
 		hasSubcommand.forEach((option) => ((option.options ??= []), addHideOptions(option.options)));
 	else
 		options.push({
+			type: ApplicationCommandOptionType.Integer,
 			name: 'hide',
 			description: 'Whether to hide the response',
 			choices: [{ name: 'Yes', value: 1 }],
-			type: ApplicationCommandOptionType.Integer,
 		});
 };
 
-export const roundDec = (num: number, precision: number) => {
+export const roundDec = (num: number, precision = 2) => {
 	const factor = 10 ** precision;
 	return Math.round((num + Number.EPSILON) * factor) / factor;
 };
@@ -285,3 +340,38 @@ export const bestMatch = <T extends string>(str: string, arr: T[]): T => {
 
 	return arr[bestMatchIndex];
 };
+
+export const getPageButtons = (): [
+	APIButtonComponentWithCustomId,
+	APIButtonComponentWithCustomId,
+	APIButtonComponentWithCustomId,
+	APIButtonComponentWithCustomId
+] => [
+	{
+		type: ComponentType.Button,
+		style: ButtonStyle.Secondary,
+		emoji: { name: '⏪' },
+		custom_id: '1',
+	},
+
+	{
+		type: ComponentType.Button,
+		style: ButtonStyle.Secondary,
+		emoji: { name: '◀️' },
+		custom_id: '2',
+	},
+
+	{
+		type: ComponentType.Button,
+		style: ButtonStyle.Secondary,
+		emoji: { name: '▶️' },
+		custom_id: '3',
+	},
+
+	{
+		type: ComponentType.Button,
+		style: ButtonStyle.Secondary,
+		emoji: { name: '⏩' },
+		custom_id: '4',
+	},
+];
