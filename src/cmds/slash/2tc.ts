@@ -12,10 +12,12 @@ import {
 import { Colors } from '../../constants/bloons';
 import type { Command, InteractionHandler } from '../../http-interactions';
 import { States, type TwoTCEntry } from '../../types';
-import { getOption, getPageButtons } from '../../util';
+import { deferUpdate, getOption, getPageButtons } from '../../util';
 
 const getPageHandler = (movePage: number): InteractionHandler<APIMessageComponentInteraction> => {
-	return async (_, args: string[]) => {
+	return async ({ user, message: { interaction } }, args: string[]) => {
+		if (user!.id !== interaction!.user.id) return deferUpdate();
+
 		const argsWithNewPage = args as [string, string, string, string, string, number];
 		argsWithNewPage[5] = +args[5] + movePage;
 
