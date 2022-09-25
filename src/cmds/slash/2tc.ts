@@ -264,7 +264,9 @@ const handleComboSearch = async (
 			{
 				name: 'Link',
 				value: pageOfEntries
-					.map(({ link }) => (link.text ? `[${link.text}](${link.url})` : link.url))
+					.map(({ link, player }) =>
+						link.text ? `[${link.text}](${link.url} "${player}")` : link.url
+					)
 					.join('\n'),
 				inline: true,
 			},
