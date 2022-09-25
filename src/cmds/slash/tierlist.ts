@@ -1,6 +1,7 @@
 import {
 	ApplicationCommandOptionType,
 	InteractionResponseType,
+	MessageFlags,
 	type ApplicationCommandType,
 } from 'discord-api-types/v10';
 import { GAME_VERSION_MAJOR } from '../../constants/bloons';
@@ -27,7 +28,10 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 
 		return {
 			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content: url ?? 'No tierlist found for this version.' },
+			data: {
+				content: url ?? 'No tierlist found for this version.',
+				flags: url ? 0 : MessageFlags.Ephemeral,
+			},
 		};
 	},
 };
@@ -57,4 +61,5 @@ const TIERLISTS = [
 	'https://www.reddit.com/r/btd6/comments/sig6c0/comprehensive_tier_list_for_chimps_by_path/',
 	'https://www.reddit.com/r/btd6/comments/ttdrdg/comprehensive_tier_list_for_chimps_by_path/',
 	'https://www.reddit.com/r/btd6/comments/uqjt6l/comprehensive_tier_list_for_chimps_by_path/',
+	'https://www.reddit.com/r/btd6/comments/xbyxm9/comprehensive_tier_list_for_chimps_by_path/',
 ];
