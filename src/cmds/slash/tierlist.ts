@@ -16,7 +16,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			type: ApplicationCommandOptionType.Integer,
 			name: 'version',
 			description: 'The version of to send the tierlist for',
-			min_value: 1,
+			min_value: 9,
 			max_value: GAME_VERSION_MAJOR,
 			required: true,
 		},
@@ -37,9 +37,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 };
 
 const TIERLISTS = [
-	...Array<string>(9).fill('The first index tier list was in v9.'),
+	...Array<null>(9),
 	'https://www.reddit.com/r/btd6/comments/bn7wtu/comprehensive_tier_list_for_chimps_by_path/',
-	"There isn't a v10 tier list, go complain to past Randy",
+	null,
 	'https://www.reddit.com/r/btd6/comments/cv5mdi/comprehensive_tier_list_for_chimps_by_path/',
 	'https://www.reddit.com/r/btd6/comments/d9wdk9/comprehensive_tier_list_for_chimps_by_path/',
 	'https://www.reddit.com/r/btd6/comments/dq0xee/comprehensive_tier_list_for_chimps_by_path/',
@@ -53,9 +53,9 @@ const TIERLISTS = [
 	'https://www.reddit.com/r/btd6/comments/jp0ezq/comprehensive_tier_list_for_chimps_by_path/',
 	'https://www.reddit.com/r/btd6/comments/knnwg9/comprehensive_tier_list_for_chimps_by_path/',
 	'https://www.reddit.com/r/btd6/comments/lyy5v5/comprehensive_tier_list_for_chimps_by_path/',
-	"Exephur sucks and didn't make v24 tier list lmao",
+	null,
 	'https://www.reddit.com/r/btd6/comments/nkn8ct/comprehensive_tier_list_for_chimps_by_path/',
-	"Exephur sucks and didn't make v26 tier list lmao",
+	null,
 	'https://www.reddit.com/r/btd6/comments/q6f3vs/comprehensive_tier_list_for_chimps_by_path/',
 	'https://www.reddit.com/r/btd6/comments/rc4rkm/comprehensive_tier_list_for_chimps_by_path/',
 	'https://www.reddit.com/r/btd6/comments/sig6c0/comprehensive_tier_list_for_chimps_by_path/',
