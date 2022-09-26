@@ -30,7 +30,7 @@ const getPageHandler = (movePage: number): InteractionHandler<APIMessageComponen
 };
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
-	name: 'LCD',
+	name: 'lcd',
 	description: 'Browse completed LCD Index entries',
 	options: [
 		{
@@ -100,7 +100,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 
 const handleSpecificEntry = async (map: string): Promise<APIInteractionResponseCallbackData> => {
 	const query = new URLSearchParams({ map });
-	const entries = await fetch('https://btd-Index-api.hop.sh/index/LCD?' + query.toString()).then(
+	const entries = await fetch('https://btd-Index-api.hop.sh/index/lcd?' + query.toString()).then(
 		(res) => (res.ok ? res.json<LCCEntry[]>() : null)
 	);
 
@@ -169,7 +169,7 @@ const handleFilteredSearch = async (
 		filterStr += `Version: ${version}`;
 	}
 
-	const entries = await fetch('https://btd-Index-api.hop.sh/index/LCD?' + query.toString()).then(
+	const entries = await fetch('https://btd-Index-api.hop.sh/index/lcd?' + query.toString()).then(
 		(res) => (res.ok ? res.json<LCCEntry[]>() : null)
 	);
 	if (!entries?.length) throw new Error('Failed to fetch LCD Index entries.');
