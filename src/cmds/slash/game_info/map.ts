@@ -4,9 +4,9 @@ import {
 	type ApplicationCommandType,
 	type APIEmbed,
 } from 'discord-api-types/v10';
-import { Colors, MAPS } from '../../constants/bloons';
-import type { Command } from '../../http-interactions';
-import { bestMatch, getOption, REPORT_BUG_BUTTON_ROW, toTitleCase } from '../../util';
+import { Colors, MAPS } from '../../../constants/bloons';
+import type { Command } from '../../../http-interactions';
+import { bestMatch, getOption, REPORT_BUG_BUTTON_ROW, toTitleCase } from '../../../util';
 
 const MAP_NAMES = Object.keys(MAPS) as (keyof typeof MAPS)[];
 

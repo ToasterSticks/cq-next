@@ -48,7 +48,7 @@ export interface TwoTCEntry {
 	state: States;
 }
 
-export interface TwoMPEntry {
+export interface TwoMPCEntry {
 	tower: Tower;
 	map: string;
 	version: string;
@@ -65,5 +65,5 @@ export interface LCCEntry {
 	date: number;
 	player: string;
 	link: Hyperlink;
-	States: States;
+	state: States;
 }

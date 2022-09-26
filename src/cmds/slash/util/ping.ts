@@ -3,7 +3,7 @@ import {
 	MessageFlags,
 	type ApplicationCommandType,
 } from 'discord-api-types/v10';
-import type { Command } from '../../http-interactions';
+import type { Command } from '../../../http-interactions';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'ping',

@@ -13,11 +13,11 @@ import {
 	Gamemode,
 	NORMAL_INCOME,
 	ROUND_CONTENTS,
-} from '../../constants/bloons';
+} from '../../../constants/bloons';
 import { stripIndents } from 'common-tags';
-import type { Command } from '../../http-interactions';
-import { Enemies, getOption, roundDec } from '../../util';
-import type { WithRequiredProp } from '../../types';
+import type { Command } from '../../../http-interactions';
+import { Enemies, getOption, roundDec } from '../../../util';
+import type { WithRequiredProp } from '../../../types';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'round',

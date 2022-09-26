@@ -4,9 +4,9 @@ import {
 	MessageFlags,
 	type ApplicationCommandType,
 } from 'discord-api-types/v10';
-import { GAME_VERSION_MAJOR } from '../../constants/bloons';
-import type { Command } from '../../http-interactions';
-import { getOption } from '../../util';
+import { GAME_VERSION_MAJOR } from '../../../constants/bloons';
+import type { Command } from '../../../http-interactions';
+import { getOption } from '../../../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'tierlist',

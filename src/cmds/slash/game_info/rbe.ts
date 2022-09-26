@@ -4,13 +4,14 @@ import {
 	MessageFlags,
 	type ApplicationCommandType,
 } from 'discord-api-types/v10';
-import { ABR_INCOME, Gamemode, NORMAL_INCOME } from '../../constants/bloons';
-import type { Command } from '../../http-interactions';
-import { getOption } from '../../util';
+import { stripIndents } from 'common-tags';
+import { ABR_INCOME, Gamemode, NORMAL_INCOME } from '../../../constants/bloons';
+import type { Command } from '../../../http-interactions';
+import { getOption } from '../../../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
-	name: 'income',
-	description: 'Calculate the income of a round',
+	name: 'rbe',
+	description: 'Calculate the RBE of a round',
 	options: [
 		{
 			type: ApplicationCommandOptionType.Integer,
@@ -34,7 +35,6 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			choices: [
 				{ name: 'Normal', value: Gamemode.NORMAL },
 				{ name: 'Alternate Bloons Rounds', value: Gamemode.ABR },
-				{ name: 'Half Cash', value: Gamemode.HALF_CASH },
 			],
 		},
 	],
@@ -68,16 +68,14 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			};
 
 		const info = mode === Gamemode.ABR ? ABR_INCOME : NORMAL_INCOME;
-		let cashEarned = info[endRound].cumulativeCash - info[startRound - 1].cumulativeCash;
-
-		if (mode === Gamemode.HALF_CASH) cashEarned /= 2;
-
-		const gamemodeStr = ['CHIMPS', 'Alternate Bloons Rounds', 'Half Cash'][mode];
+		const totalPopCount = info[endRound].cumulativeRBE - info[startRound - 1].cumulativeRBE;
 
 		return {
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: {
-				content: `**${cashEarned.toLocaleString()}** is made in ${gamemodeStr} from round(s) ${startRound} to ${endRound}.`,
+				content: stripIndents`
+					The total RBE is **${totalPopCount.toLocaleString()}** from round(s) ${startRound} to ${endRound}.
+					Note: some towers may count pops differently due to bugs`,
 			},
 		};
 	},

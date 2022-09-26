@@ -7,10 +7,10 @@ import {
 	type APIEmbed,
 } from 'discord-api-types/v10';
 import { stripIndents } from 'common-tags';
-import { Colors, Temple, TSG, TowerType } from '../../constants/bloons';
-import type { Command } from '../../http-interactions';
-import { getOption } from '../../util';
-import type { WithRequiredProp } from '../../types';
+import { Colors, Temple, TSG, TowerType } from '../../../constants/bloons';
+import type { Command } from '../../../http-interactions';
+import { getOption } from '../../../util';
+import type { WithRequiredProp } from '../../../types';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'temple',

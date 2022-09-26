@@ -5,11 +5,11 @@ import {
 	type ApplicationCommandType,
 	type APIInteractionResponseCallbackData,
 } from 'discord-api-types/v10';
-import { Colors } from '../../constants/bloons';
-import { tags } from '../../constants/tags';
-import type { Command } from '../../http-interactions';
-import type { TagData } from '../../types';
-import { getOption } from '../../util';
+import { Colors } from '../../../constants/bloons';
+import { tags } from '../../../constants/tags';
+import type { Command } from '../../../http-interactions';
+import type { TagData } from '../../../types';
+import { getOption } from '../../../util';
 
 const tagCache = new Map<string, TagData>();
 

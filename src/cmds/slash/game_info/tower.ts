@@ -10,10 +10,10 @@ import {
 	type APIActionRowComponent,
 } from 'discord-api-types/v10';
 import { stripIndents } from 'common-tags';
-import { BLOONOLOGY_TOWER_STATS, Colors, COSTS } from '../../constants/bloons';
-import type { Command } from '../../http-interactions';
-import type { ValidTowerPath } from '../../types';
-import { deferUpdate, getOption, REPORT_BUG_BUTTON_ROW, toTitleCase, Towers } from '../../util';
+import { BLOONOLOGY_TOWER_STATS, Colors, COSTS } from '../../../constants/bloons';
+import type { Command } from '../../../http-interactions';
+import type { ValidTowerPath } from '../../../types';
+import { deferUpdate, getOption, REPORT_BUG_BUTTON_ROW, toTitleCase, Towers } from '../../../util';
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: 'tower',

@@ -7,9 +7,9 @@ import {
 	Routes,
 	MessageFlags,
 } from 'discord-api-types/v10';
-import { TRIVIA } from '../../constants/bloons';
-import type { Command } from '../../http-interactions';
-import { deferUpdate, request } from '../../util';
+import { TRIVIA } from '../../../constants/bloons';
+import type { Command } from '../../../http-interactions';
+import { deferUpdate, request } from '../../../util';
 
 const LETTER_CHOICES = ['A', 'B', 'C', 'D'];
 

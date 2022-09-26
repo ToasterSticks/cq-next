@@ -9,10 +9,10 @@ import {
 	type APIMessageComponentInteraction,
 	ComponentType,
 } from 'discord-api-types/v10';
-import { Colors } from '../../constants/bloons';
-import type { Command, InteractionHandler } from '../../http-interactions';
-import { States, type TwoTCEntry } from '../../types';
-import { deferUpdate, getOption, getPageButtons } from '../../util';
+import { Colors } from '../../../constants/bloons';
+import type { Command, InteractionHandler } from '../../../http-interactions';
+import { States, type TwoTCEntry } from '../../../types';
+import { deferUpdate, getOption, getPageButtons } from '../../../util';
 
 const getPageHandler = (movePage: number): InteractionHandler<APIMessageComponentInteraction> => {
 	return async ({ user, message: { interaction } }, args: string[]) => {
@@ -21,7 +21,7 @@ const getPageHandler = (movePage: number): InteractionHandler<APIMessageComponen
 		const argsWithNewPage = args as [string, string, string, string, string, number];
 		argsWithNewPage[5] = +args[5] + movePage;
 
-		const data = await handleComboSearch(...argsWithNewPage);
+		const data = await handleFilteredSearch(...argsWithNewPage);
 		return {
 			type: InteractionResponseType.UpdateMessage,
 			data,
@@ -31,12 +31,12 @@ const getPageHandler = (movePage: number): InteractionHandler<APIMessageComponen
 
 export const command: Command<ApplicationCommandType.ChatInput> = {
 	name: '2tc',
-	description: 'Browse completed 2TC index combos',
+	description: 'Browse completed 2TC Index entries',
 	options: [
 		{
 			type: ApplicationCommandOptionType.Subcommand,
 			name: 'search',
-			description: 'Search for a combo matching specfic criteria',
+			description: 'Search for an entry matching specfic criteria',
 			options: [
 				{
 					type: ApplicationCommandOptionType.String,
@@ -51,29 +51,29 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 				{
 					type: ApplicationCommandOptionType.String,
 					name: 'map',
-					description: 'The map the combo was on',
+					description: 'The map the entry was on',
 				},
 				{
 					type: ApplicationCommandOptionType.String,
 					name: 'player',
-					description: 'The player who completed the combo',
+					description: 'The player who completed the entry',
 				},
 				{
 					type: ApplicationCommandOptionType.String,
 					name: 'version',
-					description: 'The version of the game the combo was completed in',
+					description: 'The version of the game the entry was completed in',
 				},
 			],
 		},
 		{
 			type: ApplicationCommandOptionType.Subcommand,
 			name: 'view',
-			description: 'View a specific combo',
+			description: 'View a specific 2TC entry',
 			options: [
 				{
 					type: ApplicationCommandOptionType.Integer,
 					name: 'number',
-					description: 'The number of the combo to view',
+					description: 'The number of the entry to view',
 					min_value: 1,
 					required: true,
 				},
@@ -87,32 +87,26 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 			'view'
 		);
 
-		try {
-			const data = await (isSpecific
-				? handleSpecificCombo(getOption<number, true>(isSpecific, 'number'))
-				: handleComboSearch(
-						getOption<string>(options, 'tower-1', true) ?? '',
-						getOption<string>(options, 'tower-2', true) ?? '',
-						getOption<string>(options, 'map', true) ?? '',
-						getOption<string>(options, 'player', true) ?? '',
-						getOption<string>(options, 'version', true) ?? ''
-				  ));
+		const data = await (isSpecific
+			? handleSpecificEntry(getOption<number, true>(isSpecific, 'number'))
+			: handleFilteredSearch(
+					getOption<string>(options, 'tower-1', true) ?? '',
+					getOption<string>(options, 'tower-2', true) ?? '',
+					getOption<string>(options, 'map', true) ?? '',
+					getOption<string>(options, 'player', true) ?? '',
+					getOption<string>(options, 'version', true) ?? ''
+			  )
+		).catch(
+			({ message }: Error): APIInteractionResponseCallbackData => ({
+				content: message,
+				flags: MessageFlags.Ephemeral,
+			})
+		);
 
-			return {
-				type: InteractionResponseType.ChannelMessageWithSource,
-				data,
-			};
-		} catch (error) {
-			const { message } = error as Error;
-
-			return {
-				type: InteractionResponseType.ChannelMessageWithSource,
-				data: {
-					content: message,
-					flags: MessageFlags.Ephemeral,
-				},
-			};
-		}
+		return {
+			type: InteractionResponseType.ChannelMessageWithSource,
+			data,
+		};
 	},
 
 	components: {
@@ -123,14 +117,14 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 	},
 };
 
-const handleSpecificCombo = async (number: number): Promise<APIInteractionResponseCallbackData> => {
-	const entries = await fetch('https://btd-index-api.hop.sh/index/2tc').then((res) =>
+const handleSpecificEntry = async (number: number): Promise<APIInteractionResponseCallbackData> => {
+	const entries = await fetch('https://btd-Index-api.hop.sh/index/2tc').then((res) =>
 		res.ok ? res.json<TwoTCEntry[]>() : null
 	);
-	if (!entries) throw new Error('Failed to fetch 2TC index entries.');
+	if (!entries) throw new Error('Failed to fetch 2TC Index entries.');
 
 	const entry = entries[number - 1];
-	if (!entry) throw new Error(`No 2TC index entry found for number ${number}.`);
+	if (!entry) throw new Error(`No 2TC Index entry found for number ${number}.`);
 
 	const embed: APIEmbed = {
 		color: Colors.CYBER,
@@ -187,7 +181,7 @@ const handleSpecificCombo = async (number: number): Promise<APIInteractionRespon
 	return { embeds: [embed] };
 };
 
-const handleComboSearch = async (
+const handleFilteredSearch = async (
 	tower1: string,
 	tower2: string,
 	map: string,
@@ -219,10 +213,10 @@ const handleComboSearch = async (
 		filterStr += `Version: ${version}`;
 	}
 
-	const entries = await fetch('https://btd-index-api.hop.sh/index/2tc?' + query.toString()).then(
+	const entries = await fetch('https://btd-Index-api.hop.sh/index/2tc?' + query.toString()).then(
 		(res) => (res.ok ? res.json<TwoTCEntry[]>() : null)
 	);
-	if (!entries?.length) throw new Error('Failed to fetch 2TC index entries.');
+	if (!entries?.length) throw new Error('Failed to fetch 2TC Index entries.');
 
 	const pages = Math.ceil(entries.length / 10);
 	if (page > pages) page = pages;
@@ -244,7 +238,7 @@ const handleComboSearch = async (
 		description: filterStr,
 		fields: [
 			{
-				name: 'Number of combos',
+				name: 'Number of entries',
 				value: `${endIndex - 9}-${endIndex - 10 + pageOfEntries.length} of **${entries.length}**`,
 			},
 			{
