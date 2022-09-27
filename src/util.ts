@@ -4,6 +4,8 @@ import {
 	InteractionResponseType,
 	RouteBases,
 	ApplicationCommandOptionType,
+	MessageFlags,
+	type APIInteractionResponseCallbackData,
 	type APIApplicationCommandInteractionDataBasicOption,
 	type APIApplicationCommandInteractionDataOption,
 	type APIApplicationCommandInteractionDataSubcommandOption,
@@ -375,3 +377,8 @@ export const getPageButtons = (): [
 		custom_id: '4',
 	},
 ];
+
+export const replyWithError = ({ message }: Error): APIInteractionResponseCallbackData => ({
+	content: message,
+	flags: MessageFlags.Ephemeral,
+});

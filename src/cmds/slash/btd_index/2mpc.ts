@@ -1,18 +1,18 @@
 import {
 	ApplicationCommandOptionType,
 	InteractionResponseType,
-	MessageFlags,
+	ComponentType,
 	type ApplicationCommandType,
 	type APIEmbed,
 	type APIApplicationCommandInteractionDataSubcommandOption,
 	type APIInteractionResponseCallbackData,
 	type APIMessageComponentInteraction,
-	ComponentType,
+	type APISelectMenuComponent,
 } from 'discord-api-types/v10';
 import { Colors } from '../../../constants/bloons';
 import type { Command, InteractionHandler } from '../../../http-interactions';
 import type { TwoMPCEntry } from '../../../types';
-import { deferUpdate, getOption, getPageButtons } from '../../../util';
+import { deferUpdate, getOption, getPageButtons, replyWithError } from '../../../util';
 
 const getPageHandler = (movePage: number): InteractionHandler<APIMessageComponentInteraction> => {
 	return async ({ user, message: { interaction } }, args: string[]) => {
@@ -21,10 +21,9 @@ const getPageHandler = (movePage: number): InteractionHandler<APIMessageComponen
 		const argsWithNewPage = args as [string, string, string, string, number];
 		argsWithNewPage[4] = +args[4] + movePage;
 
-		const data = await handleFilteredSearch(...argsWithNewPage);
 		return {
 			type: InteractionResponseType.UpdateMessage,
-			data,
+			data: await handleFilteredSearch(...argsWithNewPage).catch(replyWithError),
 		};
 	};
 };
@@ -90,12 +89,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 					getOption<string>(options, 'player', true) ?? '',
 					getOption<string>(options, 'version', true) ?? ''
 			  )
-		).catch(
-			({ message }: Error): APIInteractionResponseCallbackData => ({
-				content: message,
-				flags: MessageFlags.Ephemeral,
-			})
-		);
+		).catch(replyWithError);
 
 		return {
 			type: InteractionResponseType.ChannelMessageWithSource,
@@ -108,6 +102,14 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		2: getPageHandler(-1),
 		3: getPageHandler(1),
 		4: getPageHandler(5),
+		specific_entry: async ({ data }) => {
+			if (data.component_type !== ComponentType.SelectMenu) return deferUpdate();
+
+			return {
+				type: InteractionResponseType.UpdateMessage,
+				data: await handleSpecificEntry(+data.values[0]).catch(replyWithError),
+			};
+		},
 	},
 };
 
@@ -161,7 +163,7 @@ const handleSpecificEntry = async (number: number): Promise<APIInteractionRespon
 		],
 	};
 
-	return { embeds: [embed] };
+	return { embeds: [embed], components: [] };
 };
 
 const handleFilteredSearch = async (
@@ -243,8 +245,21 @@ const handleFilteredSearch = async (
 		],
 	};
 
+	const selectMenu: APISelectMenuComponent = {
+		type: ComponentType.SelectMenu,
+		custom_id: 'specific_entry',
+		options: pageOfEntries.map(({ number, tower, player }) => ({
+			label: tower.name,
+			description: `Entry #${number} | ${player}`,
+			value: number.toString(),
+		})),
+	};
+
 	return {
 		embeds: [embed],
-		components: [{ type: ComponentType.ActionRow, components: pageButtons }],
+		components: [
+			{ type: ComponentType.ActionRow, components: [selectMenu] },
+			{ type: ComponentType.ActionRow, components: pageButtons },
+		],
 	};
 };

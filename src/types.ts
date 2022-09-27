@@ -37,8 +37,8 @@ export enum States {
 }
 
 export interface TwoTCEntry {
-	tower_1: Tower;
-	tower_2: Tower;
+	number: number;
+	towers: [Tower, Tower];
 	map: string;
 	version: string;
 	date: number;
@@ -49,6 +49,7 @@ export interface TwoTCEntry {
 }
 
 export interface TwoMPCEntry {
+	number: number;
 	tower: Tower;
 	map: string;
 	version: string;
