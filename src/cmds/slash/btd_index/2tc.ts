@@ -108,8 +108,9 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 		2: getPageHandler(-1),
 		3: getPageHandler(1),
 		4: getPageHandler(5),
-		specific_entry: async ({ data }) => {
-			if (data.component_type !== ComponentType.SelectMenu) return deferUpdate();
+		specific_entry: async ({ user, message: { interaction }, data }) => {
+			if (user!.id !== interaction!.user.id || data.component_type !== ComponentType.SelectMenu)
+				return deferUpdate();
 
 			return {
 				type: InteractionResponseType.UpdateMessage,
