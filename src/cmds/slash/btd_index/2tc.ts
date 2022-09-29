@@ -135,12 +135,12 @@ const handleSpecificEntry = async (number: number): Promise<APIInteractionRespon
 		fields: [
 			{
 				name: 'Tower 1',
-				value: entry.towers[0].name,
+				value: `${entry.towers[0].name}\n(${entry.towers[0].upgrade})`,
 				inline: true,
 			},
 			{
 				name: 'Tower 2',
-				value: entry.towers[1].name,
+				value: `${entry.towers[1].name}\n(${entry.towers[1].upgrade})`,
 				inline: true,
 			},
 			{
