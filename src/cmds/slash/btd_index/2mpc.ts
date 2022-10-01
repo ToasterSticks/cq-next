@@ -115,7 +115,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 };
 
 const handleSpecificEntry = async (number: number): Promise<APIInteractionResponseCallbackData> => {
-	const entries = await fetch('https://btd-Index-api.hop.sh/index/2mpc').then((res) =>
+	const entries = await fetch('https://toastersticks.is-a.dev/index/2mpc').then((res) =>
 		res.ok ? res.json<TwoMPCEntry[]>() : null
 	);
 	if (!entries) throw new Error('Failed to fetch 2MPC Index entries.');
@@ -194,7 +194,7 @@ const handleFilteredSearch = async (
 		filterStr += `Version: ${version}`;
 	}
 
-	const entries = await fetch('https://btd-Index-api.hop.sh/index/2mpc?' + query.toString()).then(
+	const entries = await fetch('https://toastersticks.is-a.dev/index/2mpc?' + query.toString()).then(
 		(res) => (res.ok ? res.json<TwoMPCEntry[]>() : null)
 	);
 	if (!entries?.length) throw new Error('Failed to fetch 2MPC Index entries.');

@@ -103,7 +103,7 @@ export const command: Command<ApplicationCommandType.ChatInput> = {
 
 const handleSpecificEntry = async (map: string): Promise<APIInteractionResponseCallbackData> => {
 	const query = new URLSearchParams({ map });
-	const entries = await fetch('https://btd-Index-api.hop.sh/index/lcc?' + query.toString()).then(
+	const entries = await fetch('https://toastersticks.is-a.dev/index/lcc?' + query.toString()).then(
 		(res) => (res.ok ? res.json<LCCEntry[]>() : null)
 	);
 
@@ -172,7 +172,7 @@ const handleFilteredSearch = async (
 		filterStr += `Version: ${version}`;
 	}
 
-	const entries = await fetch('https://btd-Index-api.hop.sh/index/lcc?' + query.toString()).then(
+	const entries = await fetch('https://toastersticks.is-a.dev/index/lcc?' + query.toString()).then(
 		(res) => (res.ok ? res.json<LCCEntry[]>() : null)
 	);
 	if (!entries?.length) throw new Error('Failed to fetch LCC Index entries.');
